@@ -98,3 +98,4 @@ if __name__ == '__main__':
         print(entry)
 
     print(f"Search runtime: {elapsed_time:.2f} seconds")
+
