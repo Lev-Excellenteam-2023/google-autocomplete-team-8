@@ -1,6 +1,7 @@
 import time
 import zipfile
 import os
+import pickle
 import re
 
 def extract_zip_file(zip_file_path, extracted_dir):
@@ -30,9 +31,7 @@ def extract_zip_file(zip_file_path, extracted_dir):
 
 
 def clean_line(line):
-    """Cleans a line by removing non-letter characters, 
-    converting to lowercase, and normalizing white spaces."""
-
+    """Cleans a line by removing non-letter characters, converting to lowercase, and normalizing white spaces."""
     # Remove anything that is not a letter or white space
     cleaned_line = re.sub(r'[^a-zA-Z\s]', '', line)
 
@@ -44,12 +43,10 @@ def clean_line(line):
 
     return cleaned_line
 
+
 def initialize_data(extracted_dir):
     """Initializes a list with each line from the extracted
     .txt files, including file name, line number, original content, and cleaned content."""
-
-    print("Initializing system data and components")
-
     data = []
     for root, dirs, files in os.walk(extracted_dir):
         for file in files:
@@ -68,34 +65,65 @@ def initialize_data(extracted_dir):
                             })
     return data
 
+
+def save_data_to_pickle(data, pickle_file):
+    """Saves the data list to a pickle file."""
+    with open(pickle_file, 'wb') as f:
+        pickle.dump(data, f)
+    print(f"Data saved to '{pickle_file}'.")
+
+
+def load_data_from_pickle(pickle_file):
+    """Loads data from a pickle file."""
+    if os.path.exists(pickle_file):
+        with open(pickle_file, 'rb') as f:
+            return pickle.load(f)
+    else:
+        return None
+
+
 if __name__ == '__main__':
     zip_file_path = 'Archive (2).zip'
     extracted_dir = 'path_to_extract_directory'
+    pickle_file = 'data.pkl'
 
-    # Step 1: Extract the zip file
-    extract_zip_file(zip_file_path, extracted_dir)
+    # Try to load data from pickle file
+    data = load_data_from_pickle(pickle_file)
 
-    # Step 2: Initialize the data
-    data = initialize_data(extracted_dir)
+    if data is None:
+        # If no pickle file exists, extract the zip file and initialize the data
+        extract_zip_file(zip_file_path, extracted_dir)
+        data = initialize_data(extracted_dir)
+        # Save the initialized data to the pickle file
+        save_data_to_pickle(data, pickle_file)
+    else:
+        print("Loaded data from pickle file.")
 
     print("System is online!")
 
-    # Get the substring from the user
-    substring = input("Enter the substring to search for: ").lower()
+    while True:
+        # Get the substring from the user
+        substring = input("Enter the substring to search for (or type 'exit' to quit): ").lower()
 
-    # Start timing the search
-    start_time = time.time()
+        if substring == 'exit':
+            print("Exiting the system.")
+            break
 
-    # Filter results to find lines containing the substring in the cleaned content
-    filtered_results = [entry for entry in data if substring in entry['cleaned_line']]
+        # Start timing the search
+        start_time = time.time()
 
-    # End timing the search
-    end_time = time.time()
-    elapsed_time = end_time - start_time
+        # Filter results to find lines containing the substring in the cleaned content
+        filtered_results = [entry for entry in data if substring in entry['cleaned_line']]
 
-    # Print the original lines from filtered results
-    for entry in filtered_results:
-        print(entry)
+        # End timing the search
+        end_time = time.time()
+        elapsed_time = end_time - start_time
 
-    print(f"Search runtime: {elapsed_time:.2f} seconds")
+        # Print the original lines from filtered results
+        if filtered_results:
+            for entry in filtered_results:
+                print(entry)
+        else:
+            print("No matches found.")
 
+        print(f"Search runtime: {elapsed_time:.2f} seconds")
