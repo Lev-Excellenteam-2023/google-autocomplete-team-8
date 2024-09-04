@@ -45,31 +45,40 @@ def get_good_letters_num(actions):
     return good_letters_num
 
 def get_penalty(actions, original):
-    for action in actions:
-        curr_action, edit_index_input = action[0], action[1]
 
-        if curr_action == 'replace':
-            if edit_index_input >= 4:  # same penalty for 5th letter and further
-                return 1
-            else:
-                return 5 - edit_index_input
+    if len(actions) == 0:
+        return 0
 
-        elif curr_action == 'insert':
-            if edit_index_input >= 4:  # same penalty for 5th letter and further
-                return 2
-            else:
-                if original[action[3]] == original[action[4]]:
-                    edit_index_input += 1
+    (action,
+     start_edit_index_input, end_edit_index_input,
+     start_index_original, end_index_original) = actions[0]
 
-                return 10 - edit_index_input * 2
+    if (len(actions) > 1 or end_edit_index_input - start_edit_index_input > 1
+            or end_index_original - start_index_original > 1):
+        return math.inf
 
-        elif curr_action == 'delete':
-            if edit_index_input >= 4:  # same penalty for 5th letter and further
-                return 2
-            else:
-                return 10 - (edit_index_input + 1) * 2
+    if action == 'replace':
+        if start_edit_index_input >= 4:  # same penalty for 5th letter and further
+            return 1
+        else:
+            return 5 - start_edit_index_input
 
-    return 0
+    elif action == 'insert':
+        if start_edit_index_input >= 4:  # same penalty for 5th letter and further
+            return 2
+        else:
+            # if same letter appears twice
+            if original[start_index_original] == original[end_index_original]:
+                start_edit_index_input += 1
+
+            return 10 - start_edit_index_input * 2
+
+    elif action == 'delete':
+        if start_edit_index_input >= 4:  # same penalty for 5th letter and further
+            return 2
+        else:
+            return 10 - (start_edit_index_input + 1) * 2
+
 
 
 def get_score(input_str: str, original: str):
@@ -82,19 +91,17 @@ def get_score(input_str: str, original: str):
 
     clean_actions = del_equal(clean_actions)
 
-    if len(clean_actions) > 1:
-        return -math.inf
-
     score -= get_penalty(clean_actions, original)
 
     return score
 
 
 
-s1 = "tobe or no"
-s2 = "word to be or not to be"
+if __name__ == '__main__':
+    s1 = "t"
+    s2 = "word to be or not to be"
 
-print(get_score_dl(s1, s2))
+    print(get_score(s1, s2))
 
 
 
