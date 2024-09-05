@@ -1,0 +1,4 @@
+__pycache__
+.idea
+autoComplete/data.pkl
+autoComplete/path_to_extract_directory/

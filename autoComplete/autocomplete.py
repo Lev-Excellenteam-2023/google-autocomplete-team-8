@@ -1,4 +1,3 @@
-import time
 import zipfile
 import os
 import pickle
@@ -35,11 +34,11 @@ def clean_line(line):
     # Remove anything that is not a letter or white space
     cleaned_line = re.sub(r'[^a-zA-Z\s]', '', line)
 
+    # Normalize white spaces (remove consecutive white spaces)
+    cleaned_line = re.sub(r'\s+', ' ', cleaned_line)
+
     # Convert to lowercase
     cleaned_line = cleaned_line.lower()
-
-    # Normalize white spaces (remove consecutive white spaces)
-    cleaned_line = re.sub(r'\s+', ' ', cleaned_line).strip()
 
     return cleaned_line
 
@@ -82,7 +81,7 @@ def load_data_from_pickle(pickle_file):
         return None
 
 
-if __name__ == '__main__':
+def extract_zip_into_database():
     zip_file_path = 'Archive (2).zip'
     extracted_dir = 'path_to_extract_directory'
     pickle_file = 'data.pkl'
@@ -99,31 +98,4 @@ if __name__ == '__main__':
     else:
         print("Loaded data from pickle file.")
 
-    print("System is online!")
-
-    while True:
-        # Get the substring from the user
-        substring = input("Enter the substring to search for (or type 'exit' to quit): ").lower()
-
-        if substring == 'exit':
-            print("Exiting the system.")
-            break
-
-        # Start timing the search
-        start_time = time.time()
-
-        # Filter results to find lines containing the substring in the cleaned content
-        filtered_results = [entry for entry in data if substring in entry['cleaned_line']]
-
-        # End timing the search
-        end_time = time.time()
-        elapsed_time = end_time - start_time
-
-        # Print the original lines from filtered results
-        if filtered_results:
-            for entry in filtered_results:
-                print(entry)
-        else:
-            print("No matches found.")
-
-        print(f"Search runtime: {elapsed_time:.2f} seconds")
+    return data

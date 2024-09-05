@@ -96,7 +96,6 @@ def get_score(input_str: str, original: str):
     return score
 
 
-
 if __name__ == '__main__':
     s1 = "t"
     s2 = "word to be or not to be"
