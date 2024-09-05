@@ -4,35 +4,52 @@ import math
 
 
 def del_prefix_suffix_insert(actions):
-    indices_to_del = []
+    # indices_to_del = []
+    #
+    # for i, action in enumerate(actions):
+    #
+    #     if action[0] == 'insert':
+    #         indices_to_del.append(i)
+    #     else:
+    #         break
+    # for i, action in zip(range(len(actions) - 1, -1, -1), reversed(actions)):
+    #     if action[0] == 'insert':
+    #         indices_to_del.append(i)
+    #     else:
+    #         break
+    #
+    # clean_actions = tuple(filter(lambda x: x[0] not in indices_to_del, enumerate(actions)))
+    # clean_actions = tuple([element[1] for element in clean_actions])
 
-    for i, action in enumerate(actions):
+    start_index = 0
+    end_index = len(actions)
 
-        if action[0] == 'insert':
-            indices_to_del.append(i)
-        else:
-            break
-    for i, action in zip(range(len(actions) - 1, -1, -1), reversed(actions)):
-        if action[0] == 'insert':
-            indices_to_del.append(i)
-        else:
-            break
+    # Find the first non-'insert' from the start
+    while start_index < end_index and actions[start_index][0] == 'insert':
+        start_index += 1
 
-    clean_actions = tuple(filter(lambda x: x[0] not in indices_to_del, enumerate(actions)))
-    clean_actions = tuple([element[1] for element in clean_actions])
+    # Find the first non-'insert' from the end
+    while end_index > start_index and actions[end_index - 1][0] == 'insert':
+        end_index -= 1
+
+    clean_actions = actions[start_index:end_index]
 
     return clean_actions
 
 def del_equal(actions):
-    indices_to_del = []
+    # indices_to_del = []
+    #
+    # for i, action in enumerate(actions):
+    #
+    #     if action[0] == 'equal':
+    #         indices_to_del.append(i)
+    #
+    #
+    #
+    # clean_actions = tuple(filter(lambda x: x[0] not in indices_to_del, enumerate(actions)))
+    # clean_actions = tuple([element[1] for element in clean_actions])
 
-    for i, action in enumerate(actions):
-
-        if action[0] == 'equal':
-            indices_to_del.append(i)
-
-    clean_actions = tuple(filter(lambda x: x[0] not in indices_to_del, enumerate(actions)))
-    clean_actions = tuple([element[1] for element in clean_actions])
+    clean_actions = list(filter(lambda item: item[0] != 'equal', actions))
 
     return clean_actions
 
@@ -67,7 +84,7 @@ def get_penalty(actions, original):
         if start_edit_index_input >= 4:  # same penalty for 5th letter and further
             return 2
         else:
-            # if same letter appears twice
+            # if a same letter appears twice
             if original[start_index_original] == original[end_index_original]:
                 start_edit_index_input += 1
 
@@ -98,7 +115,7 @@ def get_score(input_str: str, original: str):
 
 
 if __name__ == '__main__':
-    s1 = "t"
+    s1 = "to be"
     s2 = "word to be or not to be"
 
     print(get_score(s1, s2))
